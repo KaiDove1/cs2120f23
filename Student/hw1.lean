@@ -54,6 +54,8 @@ the String.length function?
 
 Answer here: 
 
+String → Nat
+
 -/
 
 /-!
@@ -71,7 +73,10 @@ Hint: Review the notes to see how we define several
 similar Boolean operators, such as *xor* and *nor*. 
 -/
 
--- Write your code here
+def imp: Bool → Bool → Bool
+| true, false => false
+| _, _ => true
+
 
 /-!
 ## Problem 3: Prove correctness by exhaustive testing
@@ -82,8 +87,13 @@ combinations of input arguments. Document the corret
 end of each #eval line, as we've done in class.
 -/
 
+
 -- Write your answers here:
-#eval _   -- etc
+#eval imp true true   -- expected: true
+#eval imp true false  -- expected: false
+#eval imp false true  -- expected: true
+#eval imp false false -- expected: true
+
 
 /-!
 ## 4. Glue together two compatible functions
@@ -141,9 +151,11 @@ Define your function here. When you've got it
 right, the following test cases should pass.
 -/
 
+
+
 -- Now complete the implementation of glue_funs'
-def glue_funs' : _
-| _ => _
+def glue_funs' (g : Nat → Bool) (f : String → Nat) (s : String) : Bool :=
+g (f s)
 
 #eval glue_funs' isEven String.length "Hello"  -- false
 #eval glue_funs' isEven String.length "Hello!" -- true
@@ -188,8 +200,8 @@ of the type arguments are implicit and inferred.
 -/
 
 -- Implement glue_funs here
-def glue_funs : _
-| _ => _
+def glue_funs {g f s : Type} (h : f → s) (k : g → f) (a : g) : s :=
+  h (k a)
 
 -- test cases
 #eval glue_funs isEven String.length "Hello"  -- false
@@ -208,9 +220,18 @@ In other words is applying double after square the same
 as applying square after double? 
 -/
 
+-- No, they will be different
+
 -- Copy the double and square functions here
+
+def double : Nat → Nat
+| n => 2 * n
+
+def square : Nat → Nat
+| n => n^2
+
 
 -- Write your tests here; include expected results
 
-#eval _
-#eval _
+#eval glue_funs double square 5 -- expected: 50, because square(5) = 25 and double(25) = 50
+#eval glue_funs square double 5 -- expected: 100, because double(5) = 10 and square(10) = 100
